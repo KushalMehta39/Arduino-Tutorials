@@ -1,4 +1,5 @@
-
+#code for controlling motor forward if no object is there and moving the motor backwards if there is and object
+# 12v motor, HW 039 motor controller, Water proof ultra sonic sensor
 
 
 #include <SoftwareSerial.h>
