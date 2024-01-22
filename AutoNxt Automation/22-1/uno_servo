@@ -1,3 +1,6 @@
+#The code will take the input from 0-180 degree from serial monitor to move the Servo motor
+# MG995 Servo motor, Arduino Uno
+
 #include <Servo.h>
 Servo myservo;
 int pos = 0;
