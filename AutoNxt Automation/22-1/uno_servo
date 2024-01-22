@@ -1,0 +1,16 @@
+#include <Servo.h>
+Servo myservo;
+int pos = 0;
+
+void setup() {
+  Serial.begin(9600);
+  while (!Serial);
+  myservo.attach(6);
+}
+
+void loop() {
+  if (Serial.available()) {
+    int state = Serial.parseInt();
+    myservo.write(state);
+  }
+}
