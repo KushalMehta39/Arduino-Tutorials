@@ -1,0 +1,64 @@
+
+
+
+#include <SoftwareSerial.h>
+
+SoftwareSerial mySerial(10, 11); // RX, TX
+
+const int lowerLimit = 30;        // Set your lower distance limit here
+const int goStraightLimit = 15;   // Set the distance limit for "GO Straight" condition
+
+int r_en = 2;
+int l_en = 3;
+
+//Use PWM pins
+int r_pwm = 5;
+int l_pwm = 6;
+
+void setup()
+{
+    Serial.begin(57600);
+    mySerial.begin(9600);
+    pinMode(2, OUTPUT);
+    pinMode(3, OUTPUT);
+    pinMode(5, OUTPUT);
+    pinMode(6, OUTPUT);
+}
+
+void loop()
+{
+    if (mySerial.available() >= 4)
+    {
+        byte data[4];
+        mySerial.readBytes(data, 4);
+
+        uint16_t distance = (data[1] << 8) + data[2];
+
+        if (distance > lowerLimit)
+        {
+            Serial.println(distance / 10.0);
+            float dist1 = distance / 10.0;  // Declare dist1 variable
+
+            if (dist1 > goStraightLimit)
+            {
+                Serial.println("GO Straight");
+                digitalWrite(r_en, HIGH);
+                digitalWrite(l_en, HIGH);
+                analogWrite(r_pwm, 0);
+                analogWrite(l_pwm, 255);
+            }
+            else
+            {
+                Serial.println("Go back");
+                digitalWrite(r_en, HIGH);
+                digitalWrite(l_en, HIGH);
+                analogWrite(r_pwm, 255);
+                analogWrite(l_pwm, 0);
+            }
+        }
+        else
+        {
+            Serial.println("Below lower limit.");
+        }
+    }
+}
