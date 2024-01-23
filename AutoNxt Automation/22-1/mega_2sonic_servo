@@ -1,6 +1,7 @@
 // Code for Going Straight if there is space, if front < 15 it will check for back sensor if back < 15 the motor will stop, otherwise it will go back
 // 2 ultrasonic sensor, Arduino Mega, HW-039 Controller, servo 24v motor, Power Supply 
 #include <SoftwareSerial.h>
+#include <AltSoftSerial.h>
 
 const int lowerLimit = 30;        // Set your lower distance limit here
 const int goStraightLimit = 15;   // Set the distance limit for "GO Straight" condition
@@ -15,7 +16,9 @@ int l_pwm = 6;
 void setup()
 {
     Serial.begin(57600);
-    Serial1.begin(9600); // Use Serial1 for sensor, connect the sensor to TX1 (pin 18) and RX1 (pin 19) on Arduino Mega
+    Serial1.begin(9600); // Use Serial1 for sensor 1, connect the sensor to TX1 (pin 18) and RX1 (pin 19) on Arduino Mega
+    Serial2.begin(9600);  // Use Serial2 for sensor 2, connect the sensor to TX1 (pin 16) and RX1 (pin 17) on Arduino Mega
+    Serial.begin(9600);  // Use Serial3 for sensor 3, connect the sensor to TX1 (pin 14) and RX1 (pin 15) on Arduino Mega
     pinMode(r_en, OUTPUT);
     pinMode(l_en, OUTPUT);
     pinMode(r_pwm, OUTPUT);
@@ -24,18 +27,29 @@ void setup()
 
 void loop()
 {
-    if (Serial1.available() >= 4)
+    if (Serial1.available() >= 4 )
     {
         byte data[4];
+        byte data2[4];
+        byte data3[4];
         Serial1.readBytes(data, 4);
-
         uint16_t distance = (data[1] << 8) + data[2];
+        Serial2.readBytes(data2, 4);
+        uint16_t distance2 = (data2[1] << 8) + data2[2];
+        Serial.readBytes(data3, 4);
+        uint16_t distance3 = (data3[1] << 8) + data3[2];
 
+        
+        
+        Serial.println(distance);
+        Serial.println(distance2);
+        Serial.println(distance3);
         if (distance > lowerLimit)
         {
-            Serial.println(distance / 10.0);
+            Serial1.println(distance / 10.0);
             float dist1 = distance / 10.0;  // Declare dist1 variable
-
+            float dist2 = distance2 / 10.0;
+            float dist3 = distance3 / 10.0;
             if (dist1 > goStraightLimit)
             {
                 Serial.println("GO Straight");
@@ -44,18 +58,23 @@ void loop()
                 analogWrite(r_pwm, 0);
                 analogWrite(l_pwm, 255);
             }
-            else
+            else if(dist2 > goStraightLimit)
             {
                 Serial.println("Go back");
                 digitalWrite(r_en, HIGH);
                 digitalWrite(l_en, HIGH);
-                analogWrite(l_pwm, 0);
                 analogWrite(r_pwm, 255);
+                analogWrite(l_pwm, 0);
+            }
+            else
+            {
+                Serial.println("Stop");
+                digitalWrite(r_en, HIGH);
+                digitalWrite(l_en, HIGH);
+                analogWrite(r_pwm, 0);
+                analogWrite(l_pwm, 0);
             }
         }
-        else
-        {
-            Serial.println("Below lower limit.");
-        }
+        
     }
 }
