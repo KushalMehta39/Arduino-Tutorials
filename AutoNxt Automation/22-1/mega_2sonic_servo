@@ -1,3 +1,5 @@
+// Code for Going Straight if there is space, if front < 15 it will check for back sensor if back < 15 the motor will stop, otherwise it will go back
+// 2 ultrasonic sensor, Arduino Mega, HW-039 Controller, servo 24v motor, Power Supply 
 #include <SoftwareSerial.h>
 
 const int lowerLimit = 30;        // Set your lower distance limit here
