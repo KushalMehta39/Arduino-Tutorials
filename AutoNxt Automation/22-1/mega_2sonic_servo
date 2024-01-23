@@ -1,0 +1,59 @@
+#include <SoftwareSerial.h>
+
+const int lowerLimit = 30;        // Set your lower distance limit here
+const int goStraightLimit = 15;   // Set the distance limit for "GO Straight" condition
+
+int r_en = 2;
+int l_en = 3;
+
+// Use PWM pins for motor control
+int r_pwm = 5;
+int l_pwm = 6;
+
+void setup()
+{
+    Serial.begin(57600);
+    Serial1.begin(9600); // Use Serial1 for sensor, connect the sensor to TX1 (pin 18) and RX1 (pin 19) on Arduino Mega
+    pinMode(r_en, OUTPUT);
+    pinMode(l_en, OUTPUT);
+    pinMode(r_pwm, OUTPUT);
+    pinMode(l_pwm, OUTPUT);
+}
+
+void loop()
+{
+    if (Serial1.available() >= 4)
+    {
+        byte data[4];
+        Serial1.readBytes(data, 4);
+
+        uint16_t distance = (data[1] << 8) + data[2];
+
+        if (distance > lowerLimit)
+        {
+            Serial.println(distance / 10.0);
+            float dist1 = distance / 10.0;  // Declare dist1 variable
+
+            if (dist1 > goStraightLimit)
+            {
+                Serial.println("GO Straight");
+                digitalWrite(r_en, HIGH);
+                digitalWrite(l_en, HIGH);
+                analogWrite(r_pwm, 0);
+                analogWrite(l_pwm, 255);
+            }
+            else
+            {
+                Serial.println("Go back");
+                digitalWrite(r_en, HIGH);
+                digitalWrite(l_en, HIGH);
+                analogWrite(l_pwm, 0);
+                analogWrite(r_pwm, 255);
+            }
+        }
+        else
+        {
+            Serial.println("Below lower limit.");
+        }
+    }
+}
