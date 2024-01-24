@@ -10,10 +10,6 @@ void setup()
     Serial1.begin(9600); // Use Serial1 for sensor 1, connect the sensor to TX1 (pin 18) and RX1 (pin 19) on Arduino Mega
     Serial2.begin(9600);  // Use Serial2 for sensor 2, connect the sensor to TX1 (pin 16) and RX1 (pin 17) on Arduino Mega
     Serial3.begin(9600);  // Use Serial3 for sensor 3, connect the sensor to TX1 (pin 14) and RX1 (pin 15) on Arduino Mega
-    pinMode(r_en, OUTPUT);
-    pinMode(l_en, OUTPUT);
-    pinMode(r_pwm, OUTPUT);
-    pinMode(l_pwm, OUTPUT);
 }
 
 void loop()
