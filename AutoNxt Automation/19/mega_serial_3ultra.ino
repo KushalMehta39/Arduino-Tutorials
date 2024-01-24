@@ -1,49 +1,36 @@
 #include <SoftwareSerial.h>
 #include <AltSoftSerial.h>
 
-SoftwareSerial mySerial1(2, 3);  // RX, TX for the first sensor (pin 18, 19)
-AltSoftSerial mySerial2;          // RX, TX for the second sensor (Pin 16, 17)
-AltSoftSerial mySerial3;          // RX, TX for the second sensor (Pin 16, 17)
-
-const int lowerLimit = 10;  // Set your lower distance limit here
+const int lowerLimit = 30;        // Set your lower distance limit here
+const int goStraightLimit = 15;   // Set the distance limit for "GO Straight" condition
 
 void setup()
 {
     Serial.begin(57600);
-    mySerial1.begin(9600);
-    mySerial2.begin(9600);
-    mySerial3.begin(9600);
-
-    // Assuming you're using Serial1 and Serial2 for communication with the sensors
-    Serial1.begin(9600);  // Use Serial1 for Sensor 1
-    Serial2.begin(9600);  // Use Serial2 for Sensor 2
-    Serial3.begin(9600);  // Use Serial2 for Sensor 3
+    Serial1.begin(9600); // Use Serial1 for sensor 1, connect the sensor to TX1 (pin 18) and RX1 (pin 19) on Arduino Mega
+    Serial2.begin(9600);  // Use Serial2 for sensor 2, connect the sensor to TX1 (pin 16) and RX1 (pin 17) on Arduino Mega
+    Serial3.begin(9600);  // Use Serial3 for sensor 3, connect the sensor to TX1 (pin 14) and RX1 (pin 15) on Arduino Mega
+    pinMode(r_en, OUTPUT);
+    pinMode(l_en, OUTPUT);
+    pinMode(r_pwm, OUTPUT);
+    pinMode(l_pwm, OUTPUT);
 }
 
 void loop()
 {
-    readSensorData(Serial1, "Sensor 1: ");
-    readSensorData(Serial2, "Sensor 2: ");
-    readSensorData(Serial3, "Sensor 3: ");
-}
-
-void readSensorData(Stream& serial, const char* sensorName)
-{
-    if (serial.available() >= 4)
+    if (Serial1.available() >= 4 )
     {
         byte data[4];
-        serial.readBytes(data, 4);
-
+        byte data2[4];
+        byte data3[4];
+        Serial1.readBytes(data, 4);
         uint16_t distance = (data[1] << 8) + data[2];
-
-        Serial.print(sensorName);
-        if (distance > lowerLimit)
-        {
-            Serial.println(distance / 10.0);
-        }
-        else
-        {
-            Serial.println("Below lower limit.");
-        }
+        Serial2.readBytes(data2, 4);
+        uint16_t distance2 = (data2[1] << 8) + data2[2];
+        Serial3.readBytes(data3, 4);
+        uint16_t distance3 = (data3[1] << 8) + data3[2];
+        Serial.println(distance);
+        Serial.println(distance2);
+        Serial.println(distance3);        
     }
 }
