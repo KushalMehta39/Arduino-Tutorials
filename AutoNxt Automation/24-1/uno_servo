@@ -1,0 +1,30 @@
+// manual servo control via serial monitor
+
+#include <Servo.h>
+
+#define Servo_PWM 6
+Servo MG995_Servo;
+
+void setup() {
+  Serial.begin(9600);
+  MG995_Servo.attach(Servo_PWM);
+}
+
+void loop() {
+  Serial.println("Enter degree (0-180): ");
+  
+  while (Serial.available() == 0) {
+    // Wait for user input
+  }
+
+  int degree = Serial.parseInt();
+
+  if (degree >= 0 && degree <= 180) {
+    Serial.println("Moving to " + String(degree) + " degrees");
+    MG995_Servo.write(degree);
+    delay(1000); // Adjust this delay based on your servo's speed
+    Serial.println("Motor stopped at " + String(degree) + " degrees");
+  } else {
+    Serial.println("Invalid input. Please enter a degree between 0 and 180.");
+  }
+}
