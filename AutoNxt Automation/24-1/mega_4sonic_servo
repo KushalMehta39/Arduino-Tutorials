@@ -26,3 +26,59 @@ void setup()
     pinMode(l_pwm, OUTPUT);
 }
 
+void loop()
+{
+    if (Serial1.available() >= 4 )
+    {
+        byte data[4];
+        byte data2[4];
+        byte data3[4];
+        byte data4[4];
+      
+        Serial1.readBytes(data, 4);
+        uint16_t distance = (data[1] << 8) + data[2];
+        Serial2.readBytes(data2, 4);
+        uint16_t distance2 = (data2[1] << 8) + data2[2];
+        Serial3.readBytes(data3, 4);
+        uint16_t distance3 = (data3[1] << 8) + data3[2];
+        mySerial1.readBytes(data4, 4);
+        uint16_t distance4 = (data4[1] << 8) + data4[2];        
+        
+        Serial.println(distance);
+        Serial.println(distance2);
+        Serial.println(distance3);
+        Serial.println(distance4);       
+        if (distance > lowerLimit)
+        {
+            Serial1.println(distance / 10.0);
+            float dist1 = distance / 10.0;  // Declare dist1 variable
+            float dist2 = distance2 / 10.0;
+            float dist3 = distance3 / 10.0;
+            if (dist1 > goStraightLimit)
+            {
+                Serial.println("GO Straight");
+                digitalWrite(r_en, HIGH);
+                digitalWrite(l_en, HIGH);
+                analogWrite(r_pwm, 0);
+                analogWrite(l_pwm, 255);
+            }
+            else if(dist2 > goStraightLimit)
+            {
+                Serial.println("Go back");
+                digitalWrite(r_en, HIGH);
+                digitalWrite(l_en, HIGH);
+                analogWrite(r_pwm, 255);
+                analogWrite(l_pwm, 0);
+            }
+            else
+            {
+                Serial.println("Stop");
+                digitalWrite(r_en, HIGH);
+                digitalWrite(l_en, HIGH);
+                analogWrite(r_pwm, 0);
+                analogWrite(l_pwm, 0);
+            }
+        }
+        
+    }
+}
